@@ -1,8 +1,8 @@
 {
-  "name": "software-arch-challenge-2",
+  "name": "infrastructure",
   "version": "0.1.0",
   "bin": {
-    "software-arch-challenge-2": "bin/software-arch-challenge-2.js"
+    "infrastructure": "bin/infrastructure.js"
   },
   "scripts": {
     "build": "tsc",
