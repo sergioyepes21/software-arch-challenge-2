@@ -6,7 +6,7 @@ import { InfrastructureStack } from '../lib/infrastructure-stack';
 const envSoftwareArch: StackProps = {
   env: {
     account: '012983038368',
-    region: 'us-east-1'
+    region: 'us-west-1'
   },
 };
 
