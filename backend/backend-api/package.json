@@ -22,6 +22,7 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.425.0",
     "@aws-sdk/client-lambda": "^3.425.0",
+    "@aws-sdk/client-sns": "^3.427.0",
     "@aws-sdk/lib-dynamodb": "^3.425.0",
     "@aws-sdk/util-dynamodb": "^3.425.0",
     "@nestjs/common": "^10.0.0",

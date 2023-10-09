@@ -3,6 +3,7 @@ import { DynamoDBDocumentClient, PutCommandInput, PutCommand } from "@aws-sdk/li
 import { DataAccess } from "./data-access.interface";
 import { DayClosure } from "src/models/day-closure.dto";
 import { Injectable } from "@nestjs/common";
+import { AnomalyNotifier } from "src/anomaly-notifier/anomaly-notifier";
 
 @Injectable()
 export class CustomDynamoDBClient implements DataAccess {

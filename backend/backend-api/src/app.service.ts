@@ -18,4 +18,10 @@ export class AppService {
     await this.dataAccess.persistDayClosure(userID, transactions, closure);
     return 'The closure of the day is: ' + closure;
   }
+
+  async enableAllCompute(
+
+  ): Promise<void> {
+    await this.calculationIntegration.enableAllCompute();
+  }
 }

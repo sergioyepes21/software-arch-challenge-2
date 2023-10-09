@@ -7,10 +7,12 @@ import { CalculationIntegrationModule } from './calculation-integration/calculat
 import { CalculationIntegration } from './calculation-integration/calculation-integration.interface';
 import { ConfigModule } from '@nestjs/config';
 import { AWSLambdaClosureCalculation } from './calculation-integration/aws-lambda-closure-calculation';
+import { AnomalyNotifierModule } from './anomaly-notifier/anomaly-notifier.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    AnomalyNotifierModule,
     DataAccessModule,
     CalculationIntegrationModule,
   ],

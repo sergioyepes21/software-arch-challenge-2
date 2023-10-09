@@ -1,6 +1,7 @@
 import { InvokeCommand, LambdaClient } from "@aws-sdk/client-lambda";
 import { CalculationIntegration } from "./calculation-integration.interface";
 import { Injectable } from "@nestjs/common";
+import { AnomalyNotifier } from "src/anomaly-notifier/anomaly-notifier";
 
 @Injectable()
 export class AWSLambdaClosureCalculation implements CalculationIntegration {
@@ -14,8 +15,9 @@ export class AWSLambdaClosureCalculation implements CalculationIntegration {
 
   private MAX_CLOSURE_DEVIATION_PERCENTAGE = 0.05;
 
-  constructor() {
-    console.log('process.env.AWS_ACCESS_KEY_ID', process.env.AWS_ACCESS_KEY_ID);
+  constructor(
+    private readonly anomalyNotifier: AnomalyNotifier,
+  ) {
     this.lambdaClient = new LambdaClient({
       region: process.env.AWS_REGION     
     });
@@ -36,9 +38,9 @@ export class AWSLambdaClosureCalculation implements CalculationIntegration {
     return this.detectAnomalyAndReturnAverage(closureResults);
   }
 
-  private detectAnomalyAndReturnAverage(
+  private async detectAnomalyAndReturnAverage(
     closureResults: number[],
-  ): number {
+  ): Promise<number> {
     // If a Lambda was already invalidated, we don't need to check for anomalies
     const average = closureResults.reduce((a, b) => a + b, 0) / closureResults.length;
     if(this.enabledLambdaFunctions.length !== 3) return average;
@@ -57,7 +59,9 @@ export class AWSLambdaClosureCalculation implements CalculationIntegration {
     if(anomalyIndex === -1) return average;
 
     const toInactivateFunction = this.enabledLambdaFunctions[anomalyIndex];
-    console.log(`The function ${toInactivateFunction} will be disabled`);
+    const msg = `The function ${toInactivateFunction} returned an incorrect response. It will be disabled.`;
+    console.error(msg);
+    await this.anomalyNotifier.notifyAnomaly(msg);
 
     this.enabledLambdaFunctions.splice(anomalyIndex, 1);
     this.disabledLambdaFunctions.push(toInactivateFunction);
@@ -94,5 +98,10 @@ export class AWSLambdaClosureCalculation implements CalculationIntegration {
     }
     console.error("Payload is not a number:", payloadJson);
     return 0;
+  }
+
+  async enableAllCompute(): Promise<void> {
+    this.enabledLambdaFunctions.push(...this.disabledLambdaFunctions);
+    this.disabledLambdaFunctions.splice(0, this.disabledLambdaFunctions.length);
   }
 }
