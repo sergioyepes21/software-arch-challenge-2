@@ -15,6 +15,7 @@ export class AppController {
     return this.appService.calculateDayClosure(
       userID,
       body.transactions,
+      body.tableName,
     );
   }
   
@@ -25,5 +26,14 @@ export class AppController {
     if(!userID) throw new UnauthorizedException('No se ha enviado el header X-UserID');
     await this.appService.enableAllCompute();
     return 'All compute enabled';
+  }
+
+  @Post('/validate-closure')
+  async validateClosure(
+    @Headers('x-userid') userID: string,
+    @Body('date') date: string
+  ): Promise<string> {
+    if(!userID) throw new UnauthorizedException('No se ha enviado el header X-UserID');
+    return this.appService.validateClosure(userID, date);
   }
 }

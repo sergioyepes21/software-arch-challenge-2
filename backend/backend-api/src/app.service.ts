@@ -13,9 +13,10 @@ export class AppService {
   async calculateDayClosure(
     userID: string,
     transactions: number[],
+    tableName: string,
   ): Promise<string> {
     const closure = await this.calculationIntegration.calculateDayClosure(transactions);
-    await this.dataAccess.persistDayClosure(userID, transactions, closure);
+    await this.dataAccess.persistDayClosure(userID, transactions, closure, tableName);
     return 'The closure of the day is: ' + closure;
   }
 
@@ -23,5 +24,12 @@ export class AppService {
 
   ): Promise<void> {
     await this.calculationIntegration.enableAllCompute();
+  }
+
+  async validateClosure(
+    userID: string,
+    date: string
+  ): Promise<string> {
+    return await this.dataAccess.validateClosure(userID, date);
   }
 }

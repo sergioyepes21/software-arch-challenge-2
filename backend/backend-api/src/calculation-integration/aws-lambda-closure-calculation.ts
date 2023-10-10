@@ -7,9 +7,9 @@ import { AnomalyNotifier } from "src/anomaly-notifier/anomaly-notifier";
 export class AWSLambdaClosureCalculation implements CalculationIntegration {
   private readonly lambdaClient: LambdaClient;
 
-  private readonly enabledLambdaFunctions: string[] = process.env.LAMBDA_FUNCTIONS.split(',');
+  private enabledLambdaFunctions: string[] = process.env.LAMBDA_FUNCTIONS.split(',');
 
-  private readonly disabledLambdaFunctions: string[] = [
+  private disabledLambdaFunctions: string[] = [
 
   ];
 
@@ -101,7 +101,7 @@ export class AWSLambdaClosureCalculation implements CalculationIntegration {
   }
 
   async enableAllCompute(): Promise<void> {
-    this.enabledLambdaFunctions.push(...this.disabledLambdaFunctions);
-    this.disabledLambdaFunctions.splice(0, this.disabledLambdaFunctions.length);
+    this.enabledLambdaFunctions = process.env.LAMBDA_FUNCTIONS.split(',');
+    this.disabledLambdaFunctions = [];
   }
 }
