@@ -40,7 +40,6 @@ export class DayClosureTestCaseTaskService {
     );
     if (!shouldRun) return;
 
-    console.log('hi from DayClosureTestCaseTaskService');
     this.totalOfTests += 1;
     await this.sendRequest();
   }
@@ -55,11 +54,8 @@ export class DayClosureTestCaseTaskService {
       }),
     );
     const regMatchCorrectResponse = /The closure of the day is: [0-9]+/;
-    console.log(
-      `Test #${
-        this.totalOfTests
-      } has the correct answer? ${regMatchCorrectResponse.test(response)}`,
-    );
+    if(!regMatchCorrectResponse.test(response)) 
+      console.log(`Test #${this.totalOfTests} does not have the correct answer: ${response}`);
   }
 
   private buildRandomTransactionsBody(): TransactionBody {
