@@ -6,4 +6,5 @@ export type DayClosure = {
   transactions: number[];
   closure: number;
   closureDate: string;
+  createdAt: string;
 }

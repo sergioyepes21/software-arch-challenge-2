@@ -1,5 +1,5 @@
 import { DynamoDBClient, ResourceNotFoundException } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, PutCommandInput, PutCommand, QueryCommand, QueryCommandInput, QueryCommandOutput } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, PutCommandInput, PutCommand, QueryCommand, QueryCommandInput, QueryCommandOutput, ScanCommandInput, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { DataAccess } from "./data-access.interface";
 import { DayClosure } from "src/models/day-closure.dto";
 import { Injectable } from "@nestjs/common";
@@ -24,17 +24,24 @@ export class CustomDynamoDBClient implements DataAccess {
     );
   }
 
-  async persistDayClosure(userID: string, transactions: number[], closure: number, tableName: string): Promise<void> {
+  async persistDayClosure(
+    userID: string, 
+    transactions: number[], 
+    closure: number, 
+    tableName: string, 
+    fillUserID: boolean = true,
+    ): Promise<void> {
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
 
     const dayClosure: DayClosure = {
       PK: `USER#${userID}`,
       SK: today.toISOString(),
-      userID,
+      userID: fillUserID ? userID : '',
       transactions,
       closure,
       closureDate: today.toISOString(),
+      createdAt: new Date().toISOString(),
     };
 
     await this.persistInDynamoOrLocally(tableName, dayClosure);
@@ -119,5 +126,36 @@ export class CustomDynamoDBClient implements DataAccess {
       },
     };
     return this.client.send(new QueryCommand(putItemCommand));
+  }
+
+  async getAllClosures(
+    limit: number,
+    next?: string,
+  ): Promise<DayClosure[]> {
+    const input: ScanCommandInput = {
+      TableName: this.tableName,
+      Limit: limit,
+
+    };
+
+    if(next) {
+      const esk = JSON.parse(next);
+      input.ExclusiveStartKey = esk;
+    }
+    
+    const {
+      Items: dayClosureItems
+    } = await this.client.send(new ScanCommand(input));
+    return dayClosureItems as DayClosure[];
+  }
+
+  async modifyClosure(
+    dc: DayClosure,
+  ): Promise<void> {
+    const putItemCommand: PutCommandInput = {
+      TableName: this.tableName,
+      Item: dc,
+    };
+    await this.client.send(new PutCommand(putItemCommand));
   }
 }

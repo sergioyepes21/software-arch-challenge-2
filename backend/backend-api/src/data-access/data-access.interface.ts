@@ -1,3 +1,4 @@
+import { DayClosure } from "src/models/day-closure.dto";
 
 export interface DataAccess {
   persistDayClosure(
@@ -5,10 +6,20 @@ export interface DataAccess {
     transactions: number[],
     dayClosure: number,
     tableName: string,
+    fillUserID?: boolean,
   ): Promise<void>;
 
   validateClosure(
     userID: string,
     date: string
   ): Promise<string>;
+
+  getAllClosures(
+    limit: number,
+    next?: string
+  ): Promise<DayClosure[]>;
+
+  modifyClosure(
+    dc: DayClosure,
+  ): Promise<void>;
 }
