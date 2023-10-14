@@ -24,10 +24,6 @@ export class AWSLambdaClosureCalculation implements CalculationIntegration {
   }
 
   async calculateDayClosure(transactions: number[]): Promise<number> {
-    
-    if(this.disabledLambdaFunctions.length > 0) {
-      console.log('The disabled lambda functions are:', this.disabledLambdaFunctions);
-    }
 
     const closureResults = await Promise.all(
       this.enabledLambdaFunctions.map(async (functionName) => {
