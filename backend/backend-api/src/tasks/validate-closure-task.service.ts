@@ -44,6 +44,7 @@ export class ValidateClosureTaskService {
     );
 
     const validClosures: string[] = [];
+    const invalidClosures: string[] = [];
 
     for (const dc of dayClosureList) {
       const { data: response } = await firstValueFrom(
@@ -62,14 +63,16 @@ export class ValidateClosureTaskService {
 
       if (response === "The closure is valid") {
         validClosures.push(dc.PK);
+      } else {
+        invalidClosures.push(dc.PK);
       }
     }
-
-    if(validClosures.length > 0) {
+    if(validClosures.length > 0) 
       console.log('Items válidos: ' + validClosures.join(', '));
-    } else {
-      console.log('Todos los items son inválidos');
-    }
+
+    if(invalidClosures.length > 0) 
+      console.log('Items inválidos: ' + invalidClosures.join(', '));
+    
 
     dayClosureList.forEach((dc) => {
       dc.closure = 0;
